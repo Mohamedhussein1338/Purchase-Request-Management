@@ -1,0 +1,108 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="purchase_request_tree">
+            <field name="name">purchase request list</field>
+            <field name="model">purchase.requestes</field>
+            <field name="arch" type="xml">
+                <tree string="Purchase Request">
+                    <field name="name"/>
+                    <field name="requested_by" widget="many2one_avatar_user"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="status"
+                           decoration-info="status == 'draft'"
+                           decoration-danger="status == 'to_be_approved'"
+                           decoration-warning="status == 'approve'"
+                           decoration-muted="status=='reject'"
+                           decoration-success="status == 'cancel'"/>
+                </tree>
+            </field>
+        </record>
+        <record id="purchase_request_form_view" model="ir.ui.view">
+            <field name="name">purchase.request.form</field>
+            <field name="model">purchase.requestes</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button string="Submit for Approval" type="object" name="action_submit_for_approval"
+                                attrs="{'invisible': [('status', '!=', 'draft')]}"/>
+                        <button string="Cancel" type="object" name="action_cancel"
+                                attrs="{'invisible': [('status', '!=', 'draft')]}"/>
+                        <button string="Approve" type="object" name="action_approve"
+                                attrs="{'invisible': [('status', '!=', 'to_be_approved')]}"
+                                class="oe_highlight"/>
+                        <button string="Reject" type="object" name="action_reject"
+                                attrs="{'invisible': [('status', '!=', 'to_be_approved')]}"
+                                class="oe_highlight"/>
+                        <button string="Reset to Draft" type="object" name="action_reset_to_draft"
+                                attrs="{'invisible': [('status', '!=', 'cancel')]}"
+                                class="oe_highlight"/>
+                        <field name="status" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"
+                                       attrs="{'readonly':[('status','in',('approve','reject','cancel'))]}"/>
+                                <field name="requested_by" widget="many2one_avatar_user"
+                                       attrs="{'readonly':[('status','in',('approve','reject','cancel'))]}"/>
+                            </group>
+                            <group>
+                                <field name="start_date" default="today"
+                                       attrs="{'readonly':[('status','in',('approve','reject','cancel'))]}"/>
+                                <field name="end_date"
+                                       attrs="{'readonly':[('status','in',('approve','reject','cancel'))]}"/>
+                            </group>
+                            <group>
+                                <field name="rejection_reason" readonly="1"
+                                       attrs="{'invisible': [('status', '!=', 'reject')]}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Purchase Request Lines">
+                                <field name="orderlines"
+                                       attrs="{'readonly':[('status','in',('approve','reject','cancel'))]}">
+                                    <tree editable="top">
+                                        <field name="product_id"/>
+                                        <field name="description"/>
+                                        <field name="quantity"/>
+                                        <field name="cost_price"/>
+                                        <field name="total"/>
+                                    </tree>
+                                </field>
+                                <group name="note_group" col="6" class="mt-2 mt-md-0">
+                                    <group class="oe_subtotal_footer oe_right" colspan="2" name="technical_total">
+                                        <field name="total_price" nolabel="1" colspan="2" readonly="1"/>
+                                    </group>
+                                    <div class="clearfix"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        <record id="action_purchase_request" model="ir.actions.act_window">
+            <field name="name">Purchase Requests</field>
+            <field name="res_model">purchase.requestes</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new purchase request.
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="id_purchase_request" name="Purchase Requests" parent="purchase.menu_procurement_management"
+                  sequence="10"
+                  action="action_purchase_request"/>
+
+    </data>
+</odoo>

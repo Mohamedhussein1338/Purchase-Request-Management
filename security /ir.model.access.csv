@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+purchase_request_module.purchase_requestes,access_purchase_requestes,purchase_request_module.model_purchase_requestes,base.group_user,1,1,1,1
+purchase_request_module.purchase_request_line,access_purchase_request_line,purchase_request_module.model_purchase_request_line,base.group_user,1,1,1,1
+purchase_request_module.rejection_reason,access_rejection_reason,purchase_request_module.model_rejection_reason,base.group_user,1,1,1,1
+
+
+
+
